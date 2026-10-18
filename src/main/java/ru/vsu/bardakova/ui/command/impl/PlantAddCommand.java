@@ -1,18 +1,16 @@
-package ru.vsu.bardakova_m_e.ui.command.impl;
+package ru.vsu.bardakova.ui.command.impl;
 
-import ru.vsu.bardakova_m_e.entity.Plant;
-import ru.vsu.bardakova_m_e.service.PlantService;
-import ru.vsu.bardakova_m_e.ui.command.Command;
-import ru.vsu.bardakova_m_e.ui.command.ConsoleHelper;
+import ru.vsu.bardakova.entity.Plant;
+import ru.vsu.bardakova.ex.ValidationException;
+import ru.vsu.bardakova.service.PlantService;
+import ru.vsu.bardakova.ui.command.Command;
 
 public class PlantAddCommand implements Command {
 
     private final PlantService service;
-    private final ConsoleHelper helper;
 
-    public PlantAddCommand(PlantService service, ConsoleHelper helper) {
+    public PlantAddCommand(PlantService service) {
         this.service = service;
-        this.helper = helper;
     }
 
     @Override
@@ -24,14 +22,13 @@ public class PlantAddCommand implements Command {
 
         String name = args[0];
         String species = args[1];
+        String intervalStr = args[2];
 
-        int interval;
-        try {
-            interval = Integer.parseInt(args[2]);
-        } catch (NumberFormatException e) {
-            System.out.println("Ошибка: интервал должен быть числом.");
-            return true;
+        if (!intervalStr.matches("\\d+")) {
+            throw new ValidationException("Интервал должен быть положительным числом.");
         }
+
+        int interval = Integer.parseInt(intervalStr);
 
         Plant plant = service.addPlant(name, species, interval);
         System.out.println("Растение добавлено: " + plant.getName() + " (id: " + plant.getId() + ")");
@@ -43,4 +40,3 @@ public class PlantAddCommand implements Command {
         return "добавить растение: plant add \"Имя\" \"Вид\" <Интервал>";
     }
 }
-

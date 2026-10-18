@@ -1,6 +1,6 @@
-package ru.vsu.bardakova_m_e.service;
+package ru.vsu.bardakova.service;
 
-import ru.vsu.bardakova_m_e.entity.Plant;
+import ru.vsu.bardakova.entity.Plant;
 
 import java.util.List;
 import java.util.UUID;

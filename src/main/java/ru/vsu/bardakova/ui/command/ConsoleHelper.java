@@ -1,10 +1,9 @@
-package ru.vsu.bardakova_m_e.ui.command;
+package ru.vsu.bardakova.ui.command;
 
-import ru.vsu.bardakova_m_e.entity.Plant;
+import ru.vsu.bardakova.entity.Plant;
 
 import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 
 public class ConsoleHelper {
 
@@ -19,38 +18,6 @@ public class ConsoleHelper {
     public String readLine(String prompt) {
         System.out.println(prompt);
         return scanner.nextLine();
-    }
-
-    public String readNonBlank(String prompt) {
-        while (true) {
-            String value = readLine(prompt);
-            if (!value.isBlank()) {
-                return value.trim();
-            }
-            System.out.println("Поле не может быть пустым.");
-        }
-    }
-
-    public int readInt(String prompt) {
-        while (true) {
-            String value = readLine(prompt);
-            try {
-                return Integer.parseInt(value.trim());
-            } catch (NumberFormatException e) {
-                System.out.println("Введите целое число.");
-            }
-        }
-    }
-
-    public UUID readUuid(String prompt) {
-        while (true) {
-            String value = readLine(prompt);
-            try {
-                return UUID.fromString(value.trim());
-            } catch (IllegalArgumentException e) {
-                System.out.println("Неверный формат id.");
-            }
-        }
     }
 
     public void printPlants(List<Plant> plants, String emptyMessage) {
@@ -83,7 +50,4 @@ public class ConsoleHelper {
         System.out.println("Интервал:  " + p.getWateringIntervalDays() + " дн.");
     }
 
-    public void printSeparator() {
-        System.out.println(SEPARATOR);
-    }
 }

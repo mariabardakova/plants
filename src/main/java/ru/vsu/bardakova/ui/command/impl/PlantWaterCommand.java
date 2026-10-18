@@ -1,20 +1,15 @@
-package ru.vsu.bardakova_m_e.ui.command.impl;
+package ru.vsu.bardakova.ui.command.impl;
 
-import ru.vsu.bardakova_m_e.entity.Plant;
-import ru.vsu.bardakova_m_e.service.PlantService;
-import ru.vsu.bardakova_m_e.ui.command.Command;
-import ru.vsu.bardakova_m_e.ui.command.ConsoleHelper;
-
-import java.util.UUID;
+import ru.vsu.bardakova.entity.Plant;
+import ru.vsu.bardakova.service.PlantService;
+import ru.vsu.bardakova.ui.command.Command;
 
 public class PlantWaterCommand implements Command {
 
     private final PlantService service;
-    private final ConsoleHelper helper;
 
-    public PlantWaterCommand(PlantService service, ConsoleHelper helper) {
+    public PlantWaterCommand(PlantService service) {
         this.service = service;
-        this.helper = helper;
     }
 
     @Override

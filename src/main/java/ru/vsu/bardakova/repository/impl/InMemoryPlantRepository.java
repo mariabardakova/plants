@@ -1,7 +1,8 @@
-package ru.vsu.bardakova_m_e.repository.impl;
+package ru.vsu.bardakova.repository.impl;
 
-import ru.vsu.bardakova_m_e.entity.Plant;
-import ru.vsu.bardakova_m_e.repository.PlantRepository;
+import ru.vsu.bardakova.entity.Plant;
+import ru.vsu.bardakova.ex.RepositoryException;
+import ru.vsu.bardakova.repository.PlantRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class InMemoryPlantRepository implements PlantRepository {
     @Override
     public void save(Plant plant) {
         if (plant == null) {
-            throw new IllegalArgumentException();
+            throw new RepositoryException("Нельзя сохранить пустое растение (null)");
         }
         storage.put(plant.getId(), plant);
     }
@@ -26,7 +27,7 @@ public class InMemoryPlantRepository implements PlantRepository {
     @Override
     public void delete(Plant plant) {
         if (plant == null) {
-            return;
+            throw new RepositoryException("Нельзя удалить пустое растение (null)");
         }
         deleteById(plant.getId());
     }
@@ -34,7 +35,7 @@ public class InMemoryPlantRepository implements PlantRepository {
     @Override
     public void deleteById(UUID id) {
         if (id == null) {
-            return;
+            throw new RepositoryException("Id для удаления не может быть null");
         }
         storage.remove(id);
     }
@@ -42,7 +43,7 @@ public class InMemoryPlantRepository implements PlantRepository {
     @Override
     public Optional<Plant> findById(UUID id) {
         if (id == null) {
-            return Optional.empty();
+            throw new RepositoryException("Id для поиска не может быть null");
         }
         return Optional.ofNullable(storage.get(id));
     }
@@ -55,7 +56,7 @@ public class InMemoryPlantRepository implements PlantRepository {
     @Override
     public boolean existsById(UUID id) {
         if (id == null) {
-            return false;
+            throw new RepositoryException("Id для проверки не может быть null");
         }
         return storage.containsKey(id);
     }
@@ -63,12 +64,26 @@ public class InMemoryPlantRepository implements PlantRepository {
     @Override
     public List<Plant> findNeedingWater(LocalDate today) {
         if (today == null) {
-            throw new IllegalArgumentException();
+            throw new RepositoryException("Дата не может быть null");
         }
         List<Plant> result = new ArrayList<>();
         for (Plant plant : storage.values()) {
             if (needsWatering(plant, today)) {
                 result.add(plant);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<Plant> findByName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new RepositoryException("Имя для поиска не может быть пустым");
+        }
+        List<Plant> result = new ArrayList<>();
+        for (Plant p : storage.values()) {
+            if (p.getName().equalsIgnoreCase(name.trim())) {
+                result.add(p);
             }
         }
         return result;
@@ -82,19 +97,4 @@ public class InMemoryPlantRepository implements PlantRepository {
         LocalDate next = last.plusDays(plant.getWateringIntervalDays());
         return !next.isAfter(today);
     }
-
-    @Override
-    public List<Plant> findByName(String name) {
-        if (name == null || name.isBlank()) {
-            return List.of();
-        }
-        List<Plant> result = new ArrayList<>();
-        for (Plant p : storage.values()) {
-            if (p.getName().equalsIgnoreCase(name.trim())) {
-                result.add(p);
-            }
-        }
-        return result;
-    }
-
 }

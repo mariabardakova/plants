@@ -1,6 +1,6 @@
-package ru.vsu.bardakova_m_e.repository;
+package ru.vsu.bardakova.repository;
 
-import ru.vsu.bardakova_m_e.entity.AbstractEntity;
+import ru.vsu.bardakova.entity.AbstractEntity;
 
 import java.util.List;
 import java.util.Optional;

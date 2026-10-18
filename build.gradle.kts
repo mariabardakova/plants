@@ -3,7 +3,7 @@ plugins {
     id("application")
 }
 
-group = "ru.vsu.bardakova_m_e"
+group = "ru.vsu.bardakova"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -16,7 +16,7 @@ dependencies {
 }
 
 application {
-    mainClass = "ru.vsu.bardakova_m_e.Main"
+    mainClass = "ru.vsu.bardakova.Main"
     applicationDefaultJvmArgs = listOf(
         "-Dfile.encoding=UTF-8",
         "-Dstdout.encoding=UTF-8",

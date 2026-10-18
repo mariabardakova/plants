@@ -1,9 +1,10 @@
-package ru.vsu.bardakova_m_e.ui;
+package ru.vsu.bardakova.ui;
 
-import ru.vsu.bardakova_m_e.service.PlantService;
-import ru.vsu.bardakova_m_e.ui.command.Command;
-import ru.vsu.bardakova_m_e.ui.command.ConsoleHelper;
-import ru.vsu.bardakova_m_e.ui.command.impl.*;
+import ru.vsu.bardakova.ex.AppException;
+import ru.vsu.bardakova.service.PlantService;
+import ru.vsu.bardakova.ui.command.Command;
+import ru.vsu.bardakova.ui.command.ConsoleHelper;
+import ru.vsu.bardakova.ui.command.impl.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,11 +20,11 @@ public class ConsoleUI {
     public ConsoleUI(PlantService service) {
         this.helper = new ConsoleHelper(new Scanner(System.in));
 
-        commands.put("plant add", new PlantAddCommand(service, helper));
+        commands.put("plant add", new PlantAddCommand(service));
         commands.put("plant list", new PlantListCommand(service, helper));
         commands.put("plant get", new PlantGetCommand(service, helper));
-        commands.put("plant delete", new PlantDeleteCommand(service, helper));
-        commands.put("plant water", new PlantWaterCommand(service, helper));
+        commands.put("plant delete", new PlantDeleteCommand(service));
+        commands.put("plant water", new PlantWaterCommand(service));
         commands.put("plant thirsty", new PlantThirstyCommand(service, helper));
         commands.put("exit", new ExitCommand());
         commands.put("help", new HelpCommand(commands));
@@ -56,8 +57,10 @@ public class ConsoleUI {
             Command command = commands.get(key);
             try {
                 running = command.execute(args);
-            } catch (IllegalArgumentException e) {
+            } catch (AppException e) {
                 System.out.println("Ошибка: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Непредвиденная ошибка: " + e.getMessage());
             }
         }
     }

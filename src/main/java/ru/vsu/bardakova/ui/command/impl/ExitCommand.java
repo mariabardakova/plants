@@ -1,6 +1,6 @@
-package ru.vsu.bardakova_m_e.ui.command.impl;
+package ru.vsu.bardakova.ui.command.impl;
 
-import ru.vsu.bardakova_m_e.ui.command.Command;
+import ru.vsu.bardakova.ui.command.Command;
 
 public class ExitCommand implements Command {
 

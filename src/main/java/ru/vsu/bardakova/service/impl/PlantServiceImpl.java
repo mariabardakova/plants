@@ -1,8 +1,10 @@
-package ru.vsu.bardakova_m_e.service.impl;
+package ru.vsu.bardakova.service.impl;
 
-import ru.vsu.bardakova_m_e.entity.Plant;
-import ru.vsu.bardakova_m_e.repository.PlantRepository;
-import ru.vsu.bardakova_m_e.service.PlantService;
+import ru.vsu.bardakova.entity.Plant;
+import ru.vsu.bardakova.ex.EntityNotFoundException;
+import ru.vsu.bardakova.ex.ValidationException;
+import ru.vsu.bardakova.repository.PlantRepository;
+import ru.vsu.bardakova.service.PlantService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,7 +16,7 @@ public class PlantServiceImpl implements PlantService {
 
     public PlantServiceImpl(PlantRepository repository) {
         if (repository == null) {
-            throw new IllegalArgumentException();
+            throw new ValidationException("Репозиторий не может быть null");
         }
         this.repository = repository;
     }
@@ -22,14 +24,20 @@ public class PlantServiceImpl implements PlantService {
     @Override
     public Plant addPlant(String name, String species, int wateringIntervalDays) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException();
+            throw new ValidationException("Название не может быть пустым");
         }
         if (species == null || species.isBlank()) {
-            throw new IllegalArgumentException();
+            throw new ValidationException("Вид не может быть пустым");
         }
         if (wateringIntervalDays <= 0) {
-            throw new IllegalArgumentException();
+            throw new ValidationException("Интервал полива должен быть больше нуля");
         }
+
+        List<Plant> existing = repository.findByName(name);
+        if (!existing.isEmpty()) {
+            throw new ValidationException("Растение с именем '" + name + "' уже существует. Придумайте другое имя.");
+        }
+
         Plant plant = new Plant(name, species, null, wateringIntervalDays);
         repository.save(plant);
         return plant;
@@ -38,10 +46,10 @@ public class PlantServiceImpl implements PlantService {
     @Override
     public Plant getPlantById(UUID id) {
         if (id == null) {
-            throw new IllegalArgumentException();
+            throw new ValidationException("Id не может быть null");
         }
         return repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException());
+                .orElseThrow(() -> new EntityNotFoundException("Растение с id " + id + " не найдено"));
     }
 
     @Override
@@ -52,10 +60,10 @@ public class PlantServiceImpl implements PlantService {
     @Override
     public void deletePlant(UUID id) {
         if (id == null) {
-            throw new IllegalArgumentException();
+            throw new ValidationException("Id не может быть null");
         }
         if (!repository.existsById(id)) {
-            throw new IllegalArgumentException();
+            throw new EntityNotFoundException("Растение с id " + id + " не найдено");
         }
         repository.deleteById(id);
     }
@@ -75,14 +83,13 @@ public class PlantServiceImpl implements PlantService {
 
     @Override
     public Plant getPlantByName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new ValidationException("Имя не может быть пустым");
+        }
         List<Plant> found = repository.findByName(name);
         if (found.isEmpty()) {
-            throw new IllegalArgumentException("Растение с именем '" + name + "' не найдено.");
-        }
-        if (found.size() > 1) {
-            throw new IllegalArgumentException("Найдено несколько растений с таким именем. Уточните запрос.");
+            throw new EntityNotFoundException("Растение с именем '" + name + "' не найдено");
         }
         return found.get(0);
     }
-
 }

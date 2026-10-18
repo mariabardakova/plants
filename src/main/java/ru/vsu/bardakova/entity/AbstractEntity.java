@@ -1,4 +1,4 @@
-package ru.vsu.bardakova_m_e.entity;
+package ru.vsu.bardakova.entity;
 
 import java.util.Objects;
 

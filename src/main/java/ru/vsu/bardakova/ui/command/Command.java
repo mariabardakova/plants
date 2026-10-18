@@ -1,4 +1,4 @@
-package ru.vsu.bardakova_m_e.ui.command;
+package ru.vsu.bardakova.ui.command;
 
 public interface Command {
 
