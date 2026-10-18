@@ -83,4 +83,18 @@ public class InMemoryPlantRepository implements PlantRepository {
         return !next.isAfter(today);
     }
 
+    @Override
+    public List<Plant> findByName(String name) {
+        if (name == null || name.isBlank()) {
+            return List.of();
+        }
+        List<Plant> result = new ArrayList<>();
+        for (Plant p : storage.values()) {
+            if (p.getName().equalsIgnoreCase(name.trim())) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
 }

@@ -9,4 +9,6 @@ public interface PlantRepository extends AbstractRepository<Plant, java.util.UUI
 
     List<Plant> findNeedingWater(LocalDate today);
 
+    List<Plant> findByName(String name);
+
 }

@@ -20,23 +20,16 @@ public class PlantGetCommand implements Command {
     @Override
     public boolean execute(String[] args) {
         if (args.length == 0) {
-            System.out.println("Укажите id: plant get <id>");
+            System.out.println("Укажите имя: plant get \"Имя\"");
             return true;
         }
-        UUID id;
-        try {
-            id = UUID.fromString(args[0]);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Неверный формат id.");
-            return true;
-        }
-        Plant plant = service.getPlantById(id);
+        Plant plant = service.getPlantByName(args[0]);
         helper.printPlant(plant);
         return true;
     }
 
     @Override
     public String description() {
-        return "показать одно растение: plant get <id>";
+        return "показать растение: plant get \"Имя\"";
     }
 }

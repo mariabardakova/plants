@@ -20,24 +20,18 @@ public class PlantWaterCommand implements Command {
     @Override
     public boolean execute(String[] args) {
         if (args.length == 0) {
-            System.out.println("Укажите id: plant water <id>");
+            System.out.println("Укажите имя: plant water \"Имя\"");
             return true;
         }
-        UUID id;
-        try {
-            id = UUID.fromString(args[0]);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Неверный формат id.");
-            return true;
-        }
-        Plant plant = service.waterPlant(id);
-        System.out.println("Растение полито: " + plant.getName()
-                + " (полив: " + plant.getLastWatered() + ")");
+        Plant plant = service.getPlantByName(args[0]);
+        Plant watered = service.waterPlant(plant.getId());
+        System.out.println("Растение полито: " + watered.getName()
+                + " (полив: " + watered.getLastWatered() + ")");
         return true;
     }
 
     @Override
     public String description() {
-        return "полить растение: plant water <id>";
+        return "полить растение: plant water \"Имя\"";
     }
 }

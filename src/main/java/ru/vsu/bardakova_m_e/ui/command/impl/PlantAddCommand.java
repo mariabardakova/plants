@@ -17,9 +17,21 @@ public class PlantAddCommand implements Command {
 
     @Override
     public boolean execute(String[] args) {
-        String name = helper.readNonBlank("Имя: ");
-        String species = helper.readNonBlank("Вид: ");
-        int interval = helper.readInt("Интервал полива (дней): ");
+        if (args.length < 3) {
+            System.out.println("Формат: plant add \"Имя\" \"Вид\" <Интервал>");
+            return true;
+        }
+
+        String name = args[0];
+        String species = args[1];
+
+        int interval;
+        try {
+            interval = Integer.parseInt(args[2]);
+        } catch (NumberFormatException e) {
+            System.out.println("Ошибка: интервал должен быть числом.");
+            return true;
+        }
 
         Plant plant = service.addPlant(name, species, interval);
         System.out.println("Растение добавлено: " + plant.getName() + " (id: " + plant.getId() + ")");
@@ -28,7 +40,7 @@ public class PlantAddCommand implements Command {
 
     @Override
     public String description() {
-        return "добавить растение";
+        return "добавить растение: plant add \"Имя\" \"Вид\" <Интервал>";
     }
 }
 

@@ -26,6 +26,6 @@ public class PlantThirstyCommand implements Command {
 
     @Override
     public String description() {
-        return "показать растения, которым пора поливать";
+        return "показать растения, которые пора поливать";
     }
 }

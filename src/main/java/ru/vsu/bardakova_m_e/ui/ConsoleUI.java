@@ -5,7 +5,9 @@ import ru.vsu.bardakova_m_e.ui.command.Command;
 import ru.vsu.bardakova_m_e.ui.command.ConsoleHelper;
 import ru.vsu.bardakova_m_e.ui.command.impl.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -21,7 +23,7 @@ public class ConsoleUI {
         commands.put("plant list", new PlantListCommand(service, helper));
         commands.put("plant get", new PlantGetCommand(service, helper));
         commands.put("plant delete", new PlantDeleteCommand(service, helper));
-        commands.put("plant water", new PlantThirstyCommand(service, helper));
+        commands.put("plant water", new PlantWaterCommand(service, helper));
         commands.put("plant thirsty", new PlantThirstyCommand(service, helper));
         commands.put("exit", new ExitCommand());
         commands.put("help", new HelpCommand(commands));
@@ -35,12 +37,19 @@ public class ConsoleUI {
             if (line.isBlank()) {
                 continue;
             }
-            String[] tokens = line.trim().split("\\s+");
+
+            List<String> tokensList = tokenize(line);
+            if (tokensList.isEmpty()) {
+                continue;
+            }
+            String[] tokens = tokensList.toArray(new String[0]);
+
             String key = findKey(tokens);
             if (key == null) {
                 System.out.println("Неизвестная команда. Введите 'help'.");
                 continue;
             }
+
             String[] args = new String[tokens.length - key.split(" ").length];
             System.arraycopy(tokens, key.split(" ").length, args, 0, args.length);
 
@@ -64,5 +73,29 @@ public class ConsoleUI {
             return tokens[0];
         }
         return null;
+    }
+
+    private List<String> tokenize(String line) {
+        List<String> tokens = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        boolean inQuotes = false;
+
+        for (char c : line.toCharArray()) {
+            if (c == '"') {
+                inQuotes = !inQuotes;
+            } else if (Character.isWhitespace(c) && !inQuotes) {
+                if (current.length() > 0) {
+                    tokens.add(current.toString());
+                    current.setLength(0);
+                }
+            } else {
+                current.append(c);
+            }
+        }
+
+        if (current.length() > 0) {
+            tokens.add(current.toString());
+        }
+        return tokens;
     }
 }

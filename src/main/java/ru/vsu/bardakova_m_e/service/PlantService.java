@@ -18,4 +18,7 @@ public interface PlantService {
     Plant waterPlant(UUID id);
 
     List<Plant> findNeedingWater();
+
+    Plant getPlantByName(String name);
+
 }

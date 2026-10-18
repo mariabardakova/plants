@@ -73,5 +73,16 @@ public class PlantServiceImpl implements PlantService {
         return repository.findNeedingWater(LocalDate.now());
     }
 
+    @Override
+    public Plant getPlantByName(String name) {
+        List<Plant> found = repository.findByName(name);
+        if (found.isEmpty()) {
+            throw new IllegalArgumentException("Растение с именем '" + name + "' не найдено.");
+        }
+        if (found.size() > 1) {
+            throw new IllegalArgumentException("Найдено несколько растений с таким именем. Уточните запрос.");
+        }
+        return found.get(0);
+    }
 
 }

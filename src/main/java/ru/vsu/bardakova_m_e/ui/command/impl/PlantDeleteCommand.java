@@ -1,5 +1,6 @@
 package ru.vsu.bardakova_m_e.ui.command.impl;
 
+import ru.vsu.bardakova_m_e.entity.Plant;
 import ru.vsu.bardakova_m_e.service.PlantService;
 import ru.vsu.bardakova_m_e.ui.command.Command;
 import ru.vsu.bardakova_m_e.ui.command.ConsoleHelper;
@@ -19,23 +20,17 @@ public class PlantDeleteCommand implements Command {
     @Override
     public boolean execute(String[] args) {
         if (args.length == 0) {
-            System.out.println("Укажите id: plant delete <id>");
+            System.out.println("Укажите имя: plant delete \"Имя\"");
             return true;
         }
-        UUID id;
-        try {
-            id = UUID.fromString(args[0]);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Неверный формат id.");
-            return true;
-        }
-        service.deletePlant(id);
+        Plant plant = service.getPlantByName(args[0]);
+        service.deletePlant(plant.getId());
         System.out.println("Растение удалено.");
         return true;
     }
 
     @Override
     public String description() {
-        return "удалить растение: plant delete <id>";
+        return "удалить растение: plant delete \"Имя\"";
     }
 }
