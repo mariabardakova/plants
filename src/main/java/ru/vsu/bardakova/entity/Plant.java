@@ -1,6 +1,7 @@
 package ru.vsu.bardakova.entity;
 
 import ru.vsu.bardakova.ex.ValidationException;
+import ru.vsu.bardakova.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -45,10 +46,10 @@ public class Plant extends AbstractEntity<UUID> {
     }
 
     private static void validate(String name, String species, int wateringIntervalDays) {
-        if (name == null || name.isBlank()) {
+        if (StringUtils.isNullOrBlank(name)) {
             throw new ValidationException("Имя растения не может быть пустым");
         }
-        if (species == null || species.isBlank()) {
+        if (StringUtils.isNullOrBlank(species)) {
             throw new ValidationException("Вид растения не может быть пустым");
         }
         if (wateringIntervalDays <= 0) {

@@ -3,25 +3,29 @@ package ru.vsu.bardakova.ui.command.impl;
 import ru.vsu.bardakova.entity.Plant;
 import ru.vsu.bardakova.service.PlantService;
 import ru.vsu.bardakova.ui.command.Command;
-import ru.vsu.bardakova.ui.command.ConsoleHelper;
+import ru.vsu.bardakova.ui.command.CommandResult;
+import ru.vsu.bardakova.ui.view.PlantPrinter;
 
 import java.util.List;
 
 public class PlantListCommand implements Command {
 
     private final PlantService service;
-    private final ConsoleHelper helper;
 
-    public PlantListCommand(PlantService service, ConsoleHelper helper) {
+    public PlantListCommand(PlantService service) {
         this.service = service;
-        this.helper = helper;
     }
 
     @Override
-    public boolean execute(String[] args) {
+    public String getKey() {
+        return "plant list";
+    }
+
+    @Override
+    public CommandResult execute(String[] args) {
         List<Plant> plants = service.getAllPlants();
-        helper.printPlants(plants, "Список пуст.");
-        return true;
+        PlantPrinter.printPlants(plants, "Список пуст.");
+        return CommandResult.CONTINUE;
     }
 
     @Override

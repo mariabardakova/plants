@@ -1,13 +1,19 @@
 package ru.vsu.bardakova.ui.command.impl;
 
 import ru.vsu.bardakova.ui.command.Command;
+import ru.vsu.bardakova.ui.command.CommandResult;
 
 public class ExitCommand implements Command {
 
     @Override
-    public boolean execute(String[] args) {
+    public String getKey() {
+        return "exit";
+    }
+
+    @Override
+    public CommandResult execute(String[] args) {
         System.out.println("До свидания!");
-        return false;
+        return CommandResult.EXIT;
     }
 
     @Override

@@ -3,27 +3,31 @@ package ru.vsu.bardakova.ui.command.impl;
 import ru.vsu.bardakova.entity.Plant;
 import ru.vsu.bardakova.service.PlantService;
 import ru.vsu.bardakova.ui.command.Command;
-import ru.vsu.bardakova.ui.command.ConsoleHelper;
+import ru.vsu.bardakova.ui.command.CommandResult;
+import ru.vsu.bardakova.ui.view.PlantPrinter;
 
 public class PlantGetCommand implements Command {
 
     private final PlantService service;
-    private final ConsoleHelper helper;
 
-    public PlantGetCommand(PlantService service, ConsoleHelper helper) {
+    public PlantGetCommand(PlantService service) {
         this.service = service;
-        this.helper = helper;
     }
 
     @Override
-    public boolean execute(String[] args) {
+    public String getKey() {
+        return "plant get";
+    }
+
+    @Override
+    public CommandResult execute(String[] args) {
         if (args.length == 0) {
             System.out.println("Укажите имя: plant get \"Имя\"");
-            return true;
+            return CommandResult.CONTINUE;
         }
         Plant plant = service.getPlantByName(args[0]);
-        helper.printPlant(plant);
-        return true;
+        PlantPrinter.printPlant(plant);
+        return CommandResult.CONTINUE;
     }
 
     @Override

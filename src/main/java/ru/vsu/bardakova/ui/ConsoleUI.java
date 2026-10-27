@@ -3,14 +3,16 @@ package ru.vsu.bardakova.ui;
 import ru.vsu.bardakova.ex.AppException;
 import ru.vsu.bardakova.service.PlantService;
 import ru.vsu.bardakova.ui.command.Command;
+import ru.vsu.bardakova.ui.command.CommandResult;
 import ru.vsu.bardakova.ui.command.ConsoleHelper;
 import ru.vsu.bardakova.ui.command.impl.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.ArrayList;
+
 
 public class ConsoleUI {
 
@@ -20,14 +22,22 @@ public class ConsoleUI {
     public ConsoleUI(PlantService service) {
         this.helper = new ConsoleHelper(new Scanner(System.in));
 
-        commands.put("plant add", new PlantAddCommand(service));
-        commands.put("plant list", new PlantListCommand(service, helper));
-        commands.put("plant get", new PlantGetCommand(service, helper));
-        commands.put("plant delete", new PlantDeleteCommand(service));
-        commands.put("plant water", new PlantWaterCommand(service));
-        commands.put("plant thirsty", new PlantThirstyCommand(service, helper));
-        commands.put("exit", new ExitCommand());
-        commands.put("help", new HelpCommand(commands));
+        List<Command> allCommands = List.of(
+                new PlantAddCommand(service),
+                new PlantListCommand(service),
+                new PlantGetCommand(service),
+                new PlantDeleteCommand(service),
+                new PlantWaterCommand(service),
+                new PlantThirstyCommand(service),
+                new ExitCommand()
+        );
+
+        for (Command cmd : allCommands) {
+            commands.put(cmd.getKey(), cmd);
+        }
+
+        Command help = new HelpCommand(commands);
+        commands.put(help.getKey(), help);
     }
 
     public void start() {
@@ -35,47 +45,40 @@ public class ConsoleUI {
         boolean running = true;
         while (running) {
             String line = helper.readLine("> ");
-            if (line.isBlank()) {
-                continue;
-            }
+            if (line.isBlank()) continue;
 
             List<String> tokensList = tokenize(line);
-            if (tokensList.isEmpty()) {
-                continue;
-            }
-            String[] tokens = tokensList.toArray(new String[0]);
+            if (tokensList.isEmpty()) continue;
 
-            String key = findKey(tokens);
-            if (key == null) {
+            String matchedKey = null;
+            for (String key : commands.keySet()) {
+                int words = key.split(" ").length;
+                if (tokensList.size() >= words) {
+                    String prefix = String.join(" ", tokensList.subList(0, words));
+                    if (prefix.equals(key)) {
+                        matchedKey = key;
+                        break;
+                    }
+                }
+            }
+
+            if (matchedKey == null) {
                 System.out.println("Неизвестная команда. Введите 'help'.");
                 continue;
             }
 
-            String[] args = new String[tokens.length - key.split(" ").length];
-            System.arraycopy(tokens, key.split(" ").length, args, 0, args.length);
+            int wordsInKey = matchedKey.split(" ").length;
+            String[] args = tokensList.subList(wordsInKey, tokensList.size()).toArray(new String[0]);
 
-            Command command = commands.get(key);
+            Command command = commands.get(matchedKey);
             try {
-                running = command.execute(args);
+                if (command.execute(args) == CommandResult.EXIT) {
+                    running = false;
+                }
             } catch (AppException e) {
                 System.out.println("Ошибка: " + e.getMessage());
-            } catch (Exception e) {
-                System.out.println("Непредвиденная ошибка: " + e.getMessage());
             }
         }
-    }
-
-    private String findKey(String[] tokens) {
-        if (tokens.length >= 2) {
-            String two = tokens[0] + " " + tokens[1];
-            if (commands.containsKey(two)) {
-                return two;
-            }
-        }
-        if (commands.containsKey(tokens[0])) {
-            return tokens[0];
-        }
-        return null;
     }
 
     private List<String> tokenize(String line) {
@@ -95,10 +98,7 @@ public class ConsoleUI {
                 current.append(c);
             }
         }
-
-        if (current.length() > 0) {
-            tokens.add(current.toString());
-        }
+        if (current.length() > 0) tokens.add(current.toString());
         return tokens;
     }
 }

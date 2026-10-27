@@ -5,6 +5,7 @@ import ru.vsu.bardakova.ex.EntityNotFoundException;
 import ru.vsu.bardakova.ex.ValidationException;
 import ru.vsu.bardakova.repository.PlantRepository;
 import ru.vsu.bardakova.service.PlantService;
+import ru.vsu.bardakova.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,10 +24,10 @@ public class PlantServiceImpl implements PlantService {
 
     @Override
     public Plant addPlant(String name, String species, int wateringIntervalDays) {
-        if (name == null || name.isBlank()) {
+        if (StringUtils.isNullOrBlank(name)) {
             throw new ValidationException("Название не может быть пустым");
         }
-        if (species == null || species.isBlank()) {
+        if (StringUtils.isNullOrBlank(species)) {
             throw new ValidationException("Вид не может быть пустым");
         }
         if (wateringIntervalDays <= 0) {
@@ -83,7 +84,7 @@ public class PlantServiceImpl implements PlantService {
 
     @Override
     public Plant getPlantByName(String name) {
-        if (name == null || name.isBlank()) {
+        if (StringUtils.isNullOrBlank(name)) {
             throw new ValidationException("Имя не может быть пустым");
         }
         List<Plant> found = repository.findByName(name);

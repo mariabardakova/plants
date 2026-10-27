@@ -3,6 +3,7 @@ package ru.vsu.bardakova.repository.impl;
 import ru.vsu.bardakova.entity.Plant;
 import ru.vsu.bardakova.ex.RepositoryException;
 import ru.vsu.bardakova.repository.PlantRepository;
+import ru.vsu.bardakova.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class InMemoryPlantRepository implements PlantRepository {
 
     @Override
     public List<Plant> findByName(String name) {
-        if (name == null || name.isBlank()) {
+        if (StringUtils.isNullOrBlank(name)) {
             throw new RepositoryException("Имя для поиска не может быть пустым");
         }
         List<Plant> result = new ArrayList<>();

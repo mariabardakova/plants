@@ -2,7 +2,9 @@ package ru.vsu.bardakova.ui.command;
 
 public interface Command {
 
-    boolean execute(String[] args);
+    CommandResult execute(String[] args);
 
     String description();
+
+    String getKey();
 }

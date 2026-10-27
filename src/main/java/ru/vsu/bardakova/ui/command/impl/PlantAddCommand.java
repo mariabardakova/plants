@@ -4,6 +4,7 @@ import ru.vsu.bardakova.entity.Plant;
 import ru.vsu.bardakova.ex.ValidationException;
 import ru.vsu.bardakova.service.PlantService;
 import ru.vsu.bardakova.ui.command.Command;
+import ru.vsu.bardakova.ui.command.CommandResult;
 
 public class PlantAddCommand implements Command {
 
@@ -14,10 +15,15 @@ public class PlantAddCommand implements Command {
     }
 
     @Override
-    public boolean execute(String[] args) {
+    public String getKey() {
+        return "plant add";
+    }
+
+    @Override
+    public CommandResult execute(String[] args) {
         if (args.length < 3) {
             System.out.println("Формат: plant add \"Имя\" \"Вид\" <Интервал>");
-            return true;
+            return CommandResult.CONTINUE;
         }
 
         String name = args[0];
@@ -32,7 +38,7 @@ public class PlantAddCommand implements Command {
 
         Plant plant = service.addPlant(name, species, interval);
         System.out.println("Растение добавлено: " + plant.getName() + " (id: " + plant.getId() + ")");
-        return true;
+        return CommandResult.CONTINUE;
     }
 
     @Override
