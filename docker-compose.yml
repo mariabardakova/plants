@@ -18,5 +18,17 @@ services:
       timeout: 5s
       retries: 5
 
+  app:
+    build: .
+    depends_on:
+      plants-db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://plants-db:5432/plants_db
+      DB_USER: plants_user
+      DB_PASSWORD: plants_password
+    stdin_open: true
+    tty: true
+
 volumes:
   plants_pgdata:
