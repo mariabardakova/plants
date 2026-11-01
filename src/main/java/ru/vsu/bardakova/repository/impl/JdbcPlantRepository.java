@@ -81,18 +81,7 @@ public class JdbcPlantRepository implements PlantRepository {
 
     @Override
     public List<Plant> findAll() {
-        String sql = "SELECT * FROM plants ORDER BY name";
-        List<Plant> result = new ArrayList<>();
-        try (Connection conn = DataSourceProvider.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                result.add(mapRowToPlant(rs));
-            }
-        } catch (SQLException e) {
-            throw new RepositoryException("Ошибка при получении списка растений: " + e.getMessage());
-        }
-        return result;
+        return executeQuery("SELECT * FROM plants ORDER BY name");
     }
 
     @Override
@@ -102,39 +91,15 @@ public class JdbcPlantRepository implements PlantRepository {
 
     @Override
     public List<Plant> findByName(String name) {
-        String sql = "SELECT * FROM plants WHERE LOWER(name) = LOWER(?)";
-        List<Plant> result = new ArrayList<>();
-        try (Connection conn = DataSourceProvider.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, name);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    result.add(mapRowToPlant(rs));
-                }
-            }
-        } catch (SQLException e) {
-            throw new RepositoryException("Ошибка при поиске по имени: " + e.getMessage());
-        }
-        return result;
+        return executeQuery("SELECT * FROM plants WHERE LOWER(name) = LOWER(?)", name);
     }
 
     @Override
     public List<Plant> findNeedingWater(LocalDate today) {
-        String sql = "SELECT * FROM plants WHERE last_watered IS NULL " +
-                "OR last_watered + watering_interval_days <= ?";
-        List<Plant> result = new ArrayList<>();
-        try (Connection conn = DataSourceProvider.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setDate(1, Date.valueOf(today));
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    result.add(mapRowToPlant(rs));
-                }
-            }
-        } catch (SQLException e) {
-            throw new RepositoryException("Ошибка при поиске растений для полива: " + e.getMessage());
-        }
-        return result;
+        return executeQuery(
+                "SELECT * FROM plants WHERE last_watered IS NULL OR last_watered + watering_interval_days <= ?",
+                Date.valueOf(today)
+        );
     }
 
     private Plant mapRowToPlant(ResultSet rs) throws SQLException {
@@ -148,5 +113,23 @@ public class JdbcPlantRepository implements PlantRepository {
         int interval = rs.getInt("watering_interval_days");
 
         return new Plant(id, name, species, lastWatered, interval);
+    }
+
+    private List<Plant> executeQuery(String sql, Object... params) {
+        List<Plant> result = new ArrayList<>();
+        try (Connection conn = DataSourceProvider.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (int i = 0; i < params.length; i++) {
+                ps.setObject(i + 1, params[i]);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    result.add(mapRowToPlant(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException("Ошибка при выполнении запроса: " + e.getMessage());
+        }
+        return result;
     }
 }
